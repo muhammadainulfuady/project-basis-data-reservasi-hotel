@@ -1,5 +1,3 @@
-<!-- login ini buat admin dan juga buat tamu -->
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -11,11 +9,20 @@
 
 <body>
     <form action="#" method="POST">
-        <label for="username">No Identitas :</label>
-        <input type="text" name="username">
+        <label for="no_identitas">No Identitas :</label>
+        <input type="text" name="no_identitas">
+        <br>
+        <label for="nama_tamu">Nama Tamu :</label>
+        <input type="text" name="nama_tamu">
         <br>
         <label for="password">Password :</label>
         <input type="text" name="password">
+        <br>
+        <label for="email">Email :</label>
+        <input type="text" name="email">
+        <br>
+        <label for="no_telpon">NO Telpon :</label>
+        <input type="text" name="no_telpon">
         <br>
         <select name="admin_or_siswa" id="admin_or_siswa">
             <option value="admin">Admin</option>
