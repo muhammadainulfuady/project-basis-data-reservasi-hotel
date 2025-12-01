@@ -6,7 +6,7 @@
 
         <form action="#" method="POST" class="space-y-5">
             <div>
-                <label class="text-white font-semibold">Username</label>
+                <label class="text-white font-semibold">No Identitas</label>
                 <input type="text" required
                     class="w-full mt-1 p-3 rounded-xl bg-white/20 text-white placeholder-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-300">
             </div>
@@ -25,7 +25,7 @@
 
         <p class="text-center text-white mt-4">
             Belum punya akun?
-            <a href="registrasi.php" class="text-yellow-300 hover:underline">Daftar</a>
+            <a href="./auth/registrasi.php" class="text-yellow-300 hover:underline">Registrasi</a>
         </p>
     </div>
 </body>
