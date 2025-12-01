@@ -38,13 +38,13 @@ if (isset($_POST['booking']) && isset($_SESSION['user_login'])) {
 
         $connect->commit(); // Simpan perubahan
 
-        echo "<script>alert('Berhasil Booking & Bayar!'); window.location='kamar.php';</script>";
+        echo "<script>alert('Berhasil Booking & Bayar!'); window.location='a-kamar.php';</script>";
 
     } catch (Exception $e) {
         $connect->rollBack(); // Batalkan jika ada error
         echo "Gagal Reservasi: " . $e->getMessage();
     }
 } else {
-    header("Location: kamar.php");
+    header("Location: a-kamar.php");
 }
 ?>

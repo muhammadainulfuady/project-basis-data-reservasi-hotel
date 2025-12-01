@@ -30,7 +30,7 @@ try {
 
 <body>
     <h1>Halo, <?= $tamu['nama_tamu'] ?></h1>
-    <a href="profil.php">Edit Profil</a> | <a href="../auth/login.php">Logout</a>
+    <a href="../tamu/c-profile.php">Edit Profil</a> | <a href="../auth/login.php">Logout</a>
     <hr>
 
     <h3>Daftar Kamar Tersedia</h3>
@@ -45,7 +45,7 @@ try {
                 <td><?= $row['nomor_kamar'] ?></td>
                 <td><?= $row['tipe_kamar'] ?></td>
                 <td>
-                    <form action="proses_reservasi.php" method="POST">
+                    <form action="b-proses_reservasi.php" method="POST">
                         <input type="hidden" name="id_kamar" value="<?= $row['nomor_kamar'] ?>">
                         <button type="submit" name="booking">Pesan Sekarang</button>
                     </form>

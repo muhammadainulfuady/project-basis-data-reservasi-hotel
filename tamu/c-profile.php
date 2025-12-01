@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <input type="text" name="no_telepon" value="<?= $tamu['no_telepon'] ?>" required><br><br>
 
         <button type="submit">Update Profil</button>
-        <a href="kamar.php">Kembali</a>
+        <a href="a-kamar.php">Kembali</a>
     </form>
 </body>
 

@@ -26,14 +26,14 @@ session_start();
                     Logout
                 </a>
             <?php else: ?>
-                <a href="admin/login.php" class="text-gray-400 hover:text-white mr-6 text-sm font-semibold transition">
+                <!-- <a href="./admin/login.php" class="text-gray-400 hover:text-white mr-6 text-sm font-semibold transition">
                     Akses Admin
-                </a>
+                </a> -->
                 <a href="auth/login.php"
                     class="bg-transparent border border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black px-5 py-2 rounded-full font-semibold transition mr-2">
                     Login
                 </a>
-                <a href="auth/registrasi.php"
+                <a href="./auth/registrasi.php"
                     class="bg-yellow-500 hover:bg-yellow-400 text-black px-5 py-2 rounded-full font-bold transition">
                     Daftar
                 </a>
@@ -64,7 +64,7 @@ session_start();
                     </a>
                 </div>
             <?php else: ?>
-                <a href="auth/login.php"
+                <a href="./auth/login.php"
                     class="inline-block bg-yellow-500 hover:bg-yellow-400 text-black text-lg px-10 py-4 rounded-xl font-bold shadow-lg transform hover:scale-105 transition">
                     Mulai Menginap
                 </a>
