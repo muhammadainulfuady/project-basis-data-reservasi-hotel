@@ -2,49 +2,89 @@
 session_start();
 require_once "../config/database.php";
 
-if (isset($_POST['booking']) && isset($_SESSION['user_login'])) {
-    $id_kamar = $_POST['id_kamar'];
-    $no_identitas = $_SESSION['user_login']['no_identitas']; // Ambil dari session login
-
-    try {
-        $connect->beginTransaction(); // Mulai Transaksi biar aman
-
-        // 1. QUERY: Memesan Kamar (Insert Reservasi)
-        // Sesuai Laporan: VALUES (id, id_kamar, no_identitas, NULL, NULL)
-        // Kita biarkan check_in/out NULL dulu sesuai instruksi laporan
-        $sql_reservasi = "INSERT INTO reservasi (id_kamar, no_identitas, tgl_check_in, tgl_check_out) 
-                          VALUES (:id_kamar, :no_identitas, NULL, NULL)";
-        $stmt1 = $connect->prepare($sql_reservasi);
-        $stmt1->execute([
-            ':id_kamar' => $id_kamar,
-            ':no_identitas' => $no_identitas
-        ]);
-
-        // Ambil ID Reservasi yang baru dibuat untuk tabel pembayaran
-        $id_reservasi_baru = $connect->lastInsertId();
-
-        // 2. QUERY: Update Status Kamar
-        // Sesuai Laporan: UPDATE kamar SET status = 'dipesan' WHERE nomor_kamar = ...
-        $sql_update = "UPDATE kamar SET status = 'dipesan' WHERE nomor_kamar = :id_kamar";
-        $stmt2 = $connect->prepare($sql_update);
-        $stmt2->execute([':id_kamar' => $id_kamar]);
-
-        // 3. QUERY: Pembayaran
-        // Sesuai Laporan: INSERT INTO pembayaran ... (Contoh hardcode 800000 & cashless)
-        $sql_bayar = "INSERT INTO pembayaran (id_reservasi, metode_pembayaran, total_bayar) 
-                      VALUES (:id_res, 'cashless', 800000)";
-        $stmt3 = $connect->prepare($sql_bayar);
-        $stmt3->execute([':id_res' => $id_reservasi_baru]);
-
-        $connect->commit(); // Simpan perubahan
-
-        echo "<script>alert('Berhasil Booking & Bayar!'); window.location='a-kamar.php';</script>";
-
-    } catch (Exception $e) {
-        $connect->rollBack(); // Batalkan jika ada error
-        echo "Gagal Reservasi: " . $e->getMessage();
-    }
-} else {
+// Cek validasi akses dari tombol 'bayar'
+if (!isset($_POST['bayar']) || !isset($_SESSION['user_login'])) {
     header("Location: a-kamar.php");
+    exit;
+}
+
+// Ambil data dari form pembayaran
+$id_kamar = $_POST['id_kamar'];
+$no_identitas = $_SESSION['user_login']['no_identitas'];
+$metode = $_POST['metode_pembayaran']; // Dinamis dari pilihan user
+$total = $_POST['total_bayar']; // 800000
+
+try {
+    $connect->beginTransaction();
+
+    // 1. [Laporan: Reservasi] 
+    // Insert data reservasi
+    $sql_res = "INSERT INTO reservasi (id_kamar, no_identitas, tgl_check_in, tgl_check_out) 
+                VALUES (:kamar, :identitas, NULL, NULL)";
+    $stmt1 = $connect->prepare($sql_res);
+    $stmt1->execute([':kamar' => $id_kamar, ':identitas' => $no_identitas]);
+
+    $id_reservasi_baru = $connect->lastInsertId();
+
+    // 2. [Laporan: Update Kamar]
+    // Ubah status kamar jadi 'dipesan'
+    $sql_kamar = "UPDATE kamar SET status = 'dipesan' WHERE nomor_kamar = :kamar";
+    $stmt2 = $connect->prepare($sql_kamar);
+    $stmt2->execute([':kamar' => $id_kamar]);
+
+    // 3. [Laporan: Pembayaran]
+    // Insert pembayaran sesuai metode yang dipilih
+    $sql_bayar = "INSERT INTO pembayaran (id_reservasi, metode_pembayaran, total_bayar) 
+                  VALUES (:id_res, :metode, :total)";
+    $stmt3 = $connect->prepare($sql_bayar);
+    $stmt3->execute([
+        ':id_res' => $id_reservasi_baru,
+        ':metode' => $metode,
+        ':total' => $total
+    ]);
+
+    $connect->commit();
+
+    // TAMPILAN SUKSES
+    ?>
+    <!DOCTYPE html>
+    <html lang="id">
+
+    <head>
+        <meta charset="UTF-8">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <title>Transaksi Sukses</title>
+    </head>
+
+    <body class="bg-gray-900 flex items-center justify-center min-h-screen text-white font-sans">
+        <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl text-center max-w-sm border border-gray-700 animate-bounce-in">
+            <div
+                class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-lg shadow-green-500/50">
+                ✅
+            </div>
+            <h2 class="text-2xl font-bold text-white mb-2">Pembayaran Berhasil!</h2>
+            <p class="text-gray-400 mb-6 text-sm">
+                Terima kasih, pembayaran sebesar <b>Rp <?= number_format($total) ?></b> via
+                <b><?= ucwords(str_replace('_', ' ', $metode)) ?></b> telah diterima.
+            </p>
+            <div class="space-y-3">
+                <a href="c-profile.php"
+                    class="block w-full bg-yellow-500 text-black font-bold py-3 rounded-xl hover:bg-yellow-400 transition">
+                    Lihat Tiket / Profil
+                </a>
+                <a href="a-kamar.php" class="block text-gray-400 hover:text-white text-sm">
+                    Kembali ke Beranda
+                </a>
+            </div>
+        </div>
+    </body>
+
+    </html>
+    <?php
+    exit;
+
+} catch (Exception $e) {
+    $connect->rollBack();
+    echo "<script>alert('Gagal Transaksi: " . $e->getMessage() . "'); window.location='a-kamar.php';</script>";
 }
 ?>
